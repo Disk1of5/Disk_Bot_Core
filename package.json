@@ -1,0 +1,17 @@
+{
+  "devDependencies": {
+    "@types/node": "^18.7.13",
+    "typescript": "^4.8.2"
+  },
+  "scripts": {
+    "build": "npx tsc",
+    "watch": "npx tsc -w",
+    "run": "node out/index.js"
+  },
+  "dependencies": {
+    "@twurple/auth": "^5.2.3",
+    "@twurple/chat": "^5.2.3",
+    "dotenv": "^16.0.1",
+    "tslog": "^3.3.4"
+  }
+}
