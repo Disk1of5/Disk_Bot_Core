@@ -1,9 +1,33 @@
 version: '3'
 services:
   #web auth is used to get the access toekn
-  web:
+  authweb:
     image: nginx:latest
     volumes:
       - ./docker/webauth:/usr/share/nginx/html
     ports:
-      - 8080:80
+      - 8555:80
+
+  node:
+    build:
+      context: .
+      dockerfile: ./docker/node/Dockerfile
+    image: disk_bot_core_node:latest
+    deploy:
+      replicas: 1
+    #depends_on:
+    #ports:
+    env_file:
+      - credentials.env
+    restart: always
+    environment:
+      TZ: 'America/Edmonton'
+    #links:
+    networks:
+      - disk_backend
+    volumes:
+      - ./node_modules:/usr/src/app/node_modules
+      - ./out:/usr/src/app/out
+
+networks:
+  disk_backend:

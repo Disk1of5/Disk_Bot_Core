@@ -6,7 +6,10 @@
   "scripts": {
     "build": "npx tsc",
     "watch": "npx tsc -w",
-    "run": "node out/index.js"
+    "run": "node out/index.js",
+    "drun": "docker-compose -f docker-compose.yaml restart node",
+    "dup": "docker-compose -f docker-compose.yaml up --build",
+    "ddown": "docker-compose -f docker-compose.yaml down"
   },
   "dependencies": {
     "@twurple/auth": "^5.2.3",

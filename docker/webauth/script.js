@@ -1,9 +1,9 @@
 /**
  * Quick Method to get an access token.
  */
-
-const url="https://id.twitch.tv/oauth2/authorize?response_type=token&redirect_uri=http://localhost:8080&scope=chat:read+chat:edit+channel:moderate+whispers:read+whispers:edit+channel_editor&client_id="
-
+const this_host=window.location.origin;
+const url="https://id.twitch.tv/oauth2/authorize?response_type=token&redirect_uri="+this_host+"&scope=chat:read+chat:edit+channel:moderate+whispers:read+whispers:edit+channel_editor&client_id="
+document.getElementById("instructions").textContent += this_host;
 var hash = window.location.hash.substring(1);
     var params = {}
     hash.split('&').map(hk => { 
