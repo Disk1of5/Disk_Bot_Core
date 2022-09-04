@@ -1,0 +1,9 @@
+version: '3'
+services:
+  #web auth is used to get the access toekn
+  authweb:
+    image: nginx:latest
+    volumes:
+      - ./docker/webauth:/usr/share/nginx/html
+    ports:
+      - 8555:80

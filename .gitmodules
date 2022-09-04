@@ -1,0 +1,3 @@
+[submodule "src/Disk_Bot_Plugins"]
+	path = src/Disk_Bot_Plugins
+	url = https://github.com/Disk1of5/Disk_Bot_Plugins.git
