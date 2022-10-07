@@ -22,5 +22,18 @@ services:
       - ./out:/usr/src/app/out
     ports:
       - 8069:8069
+
+  mdb:
+    image: mongo:focal
+    restart: always
+    ports:
+      - 22017:27017
+    volumes:
+      - mdb-data:/data/db
+    networks:
+      - disk_backend 
+
 networks:
   disk_backend:
+volumes:
+  mdb-data:

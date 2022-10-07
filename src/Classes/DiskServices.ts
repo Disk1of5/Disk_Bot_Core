@@ -1,3 +1,4 @@
+import mongoose, { Mongoose } from "mongoose";
 import { Logger } from "tslog";
 import { DiskConfig } from "./DiskConfig";
 import { ExpressJsService, iExpressJsService } from "./ExpressJsService";
@@ -12,9 +13,11 @@ export class DiskServices implements iDiskServices{
     private _config : DiskConfig;
     private _logger: Logger;
     private _expressJsService: ExpressJsService;
-    constructor(logger: Logger, expressJsService: ExpressJsService, config: DiskConfig){
+    private _mongoDBservice: Mongoose;
+    constructor(logger: Logger, expressJsService: ExpressJsService,mongoDBservice: MongoDBService, config: DiskConfig){
         this._logger=logger;
         this._config=config;
+        this._mongoDBservice = mongoDBservice;
         this._expressJsService=expressJsService;
     }
     getExpressJsService(): iExpressJsService {
