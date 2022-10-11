@@ -2,7 +2,7 @@ import { Mongoose } from "mongoose";
 import { Logger } from "tslog";
 
 export interface iMongoDBService{
-    getService(): Mongoose
+    getMongoose(): Mongoose
 }
 export class MongoDBService implements iMongoDBService{
     private _mdb: Mongoose;
@@ -11,7 +11,7 @@ export class MongoDBService implements iMongoDBService{
         this._mdb= new Mongoose;
         this._logger= logger;
         try{
-        this._mdb.connect("http://localhost:2217/disk_bot");
+        this._mdb.connect("mongodb://mdb:27017/disk_bot");
         this._logger.debug("Connection Successfull");
         }catch(e){
             this._logger.error(`Unable to connect to Mongodb due to ${e}`);
@@ -19,7 +19,7 @@ export class MongoDBService implements iMongoDBService{
         
         
     }
-    getService(): typeof import("mongoose") {
+    getMongoose():Mongoose {
         return this._mdb;
     }
 

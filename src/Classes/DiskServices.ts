@@ -2,7 +2,7 @@ import mongoose, { Mongoose } from "mongoose";
 import { Logger } from "tslog";
 import { DiskConfig } from "./DiskConfig";
 import { ExpressJsService, iExpressJsService } from "./ExpressJsService";
-import { MongoDBService } from "./MonoDBService";
+import { MongoDBService } from "./MongoDBService";
 
 export interface iDiskServices{
     getLogger(): Logger
