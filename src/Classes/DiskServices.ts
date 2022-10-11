@@ -2,18 +2,20 @@ import mongoose, { Mongoose } from "mongoose";
 import { Logger } from "tslog";
 import { DiskConfig } from "./DiskConfig";
 import { ExpressJsService, iExpressJsService } from "./ExpressJsService";
+import { MongoDBService } from "./MonoDBService";
 
 export interface iDiskServices{
     getLogger(): Logger
     getConfig(): DiskConfig
     getExpressJsService(): iExpressJsService;
+    getMongoService(): MongoDBService;
 }
 
 export class DiskServices implements iDiskServices{
     private _config : DiskConfig;
     private _logger: Logger;
     private _expressJsService: ExpressJsService;
-    private _mongoDBservice: Mongoose;
+    private _mongoDBservice: MongoDBService;
     constructor(logger: Logger, expressJsService: ExpressJsService,mongoDBservice: MongoDBService, config: DiskConfig){
         this._logger=logger;
         this._config=config;
@@ -29,6 +31,10 @@ export class DiskServices implements iDiskServices{
     }
     getConfig(): DiskConfig {
         return this._config
+    }
+
+    getMongoService(): MongoDBService {
+        return this._mongoDBservice;
     }
     
 }
