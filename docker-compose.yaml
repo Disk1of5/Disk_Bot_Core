@@ -24,6 +24,8 @@ services:
       - 8069:8069
 
   mdb:
+    logging:
+      driver: none
     image: mongo:focal
     restart: always
     ports:
