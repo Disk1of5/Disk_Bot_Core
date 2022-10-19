@@ -2,6 +2,7 @@ import { AuthProvider } from "@twurple/auth/lib";
 import { ChatClient, PrivateMessage, toUserName } from "@twurple/chat";
 import { Logger } from "tslog";
 import { iPluginChatMsgCommands } from "../Interfaces/PluginChatMsgCommands";
+import { ChatUserService } from "./ChatUserService";
 import { DiskConfig } from "./DiskConfig";
 import { DiskServices } from "./DiskServices";
 
@@ -16,8 +17,9 @@ export class Disk_Bot implements iDisk_Bot{
     private _pluginChatMsgCommands!: iPluginChatMsgCommands;
     private _authProvider: AuthProvider;
     private _chatClient: ChatClient;
+    private _chatUserService: ChatUserService;
     constructor(diskServices: DiskServices) {
-    
+        this._chatUserService = diskServices.getChatUserService();
         this._config=diskServices.getConfig();
         this._logger=diskServices.getLogger();
         this._authProvider = this._config.getAuthProvider();
@@ -49,11 +51,14 @@ export class Disk_Bot implements iDisk_Bot{
             this._logger.debug(`Joined ${channel}`);
         });
 
-        
-        this._chatClient.onMessage((channel: string, user: string, message: string, msg:  PrivateMessage)=>{
-            this._pluginChatMsgCommands.commands.processChatMsgCommands(channel,user,message,msg, this._logger);
-        });
-
+        try{
+            this._chatClient.onMessage((channel: string, user: string, message: string, msg:  PrivateMessage)=>{
+                this._chatUserService.activity(channel,user, message);
+                this._pluginChatMsgCommands.commands.processChatMsgCommands(channel,user,message,msg, this._logger);
+            });
+        }catch(e){
+            this._logger.error(`We encountered an error ${e}`);
+        }
     }
 
     

@@ -14,27 +14,33 @@ export class ChatMsgCommandInterpreter implements iChatMsgCommandInterpreter{
     hasParameters:boolean =false;
 
     constructor(raw:string, logger: Logger) {
-        this.raw=raw;
-        const regex = /!\w+|\w+|"[^"]+"/g;
-        let tmp: Array<string> = Array<string>();
-        let msg;
-        while ((msg = regex.exec(this.raw)) !== null) {
-            if (msg.index === regex.lastIndex) {
-                regex.lastIndex++;
+        try{
+            this.raw=raw;
+            const regex = /!\w+|\w+|"[^"]+"/g;
+            let tmp: Array<string> = Array<string>();
+            let msg;
+            while ((msg = regex.exec(this.raw)) !== null) {
+                if (msg.index === regex.lastIndex) {
+                    regex.lastIndex++;
+                }
+                msg.forEach((match, groupIndex) => {
+                    tmp.push(match.toString());
+                });
             }
-            msg.forEach((match, groupIndex) => {
-                tmp.push(match.toString());
-            });
+            this.command=tmp[0];
+            tmp.shift();
+            this.parameters=tmp;
+            if(this.parameters.length>0)this.hasParameters=true;
+            if(this.command.substring(0,1)=="!"){
+                logger.debug(`Command ${this.command}\n`);
+                logger.debug(`Parameters ${this.parameters}\n`);
+            }
+        }catch(e){
+            logger.error("Invalid character used");
+            this.command="";
+            this.raw="";
+            this.parameters=[];
         }
-        this.command=tmp[0];
-        tmp.shift();
-        this.parameters=tmp;
-        if(this.parameters.length>0)this.hasParameters=true;
-        if(this.command.substring(0,1)=="!"){
-            logger.debug(`Command ${this.command}\n`);
-            logger.debug(`Parameters ${this.parameters}\n`);
-        }
-
 
     }
 }
