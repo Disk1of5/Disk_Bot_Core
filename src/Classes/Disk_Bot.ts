@@ -49,6 +49,7 @@ export class Disk_Bot implements iDisk_Bot{
         this._logger.info(`Connected to Twich Chat`);
         this._chatClient.onJoin((channel)=>{
             this._logger.debug(`Joined ${channel}`);
+            
         });
 
         try{

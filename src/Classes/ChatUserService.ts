@@ -1,4 +1,5 @@
-import { Document, Model, Mongoose, Query } from "mongoose";
+import { Mode } from "ircv3/lib/Message/MessageTypes/Commands";
+import { Document, Model, Models, Mongoose, Query, Schema } from "mongoose";
 import { Logger } from "tslog";
 import { MongoDBService } from "./MongoDBService";
 
@@ -15,8 +16,9 @@ export interface iChatUser{
 
 
 export interface iChatUserService{
-    getActiveUsers() : Promise<Array<iChatUser>>;
-    activity(channel: string, user: string, message: string): Promise<void>;   
+    getActiveUsers() : Promise<Array<Document & iChatUser>>;
+    activity(channel: string, user: string, message: string): Promise<void>; 
+    findUser(user: string): Promise<Document & iChatUser | null>;  
 }
 //observer pattern to keep track of listeners
 interface iChatUserObserver{
@@ -31,6 +33,7 @@ export class ChatUserService implements iChatUserService, iChatUserObserver{
     private _mdb: MongoDBService;
     private _logger: Logger;
     private _chatUser: Model<iChatUser>;
+    private _chatUserSchema: Schema;
     constructor(logger: Logger, mongodbService: MongoDBService){
         this._logger= logger;
         this._mdb= mongodbService;
@@ -45,18 +48,24 @@ export class ChatUserService implements iChatUserService, iChatUserObserver{
         lastChatMessage: { type: String, required: false},
         streamer:{type: Boolean, requierd: true}
     })
-    this._chatUser= m.model<iChatUser>('ChatUser', chatUserSchema);  
+    this._chatUserSchema = chatUserSchema;
+    this._chatUser= m.model<iChatUser>('ChatUser', this._chatUserSchema);  
 
     }
+    async findUser(user: string): Promise<Document & iChatUser | null> {
+            
+            let u:Document  & iChatUser | null  = await this._chatUser.findOne({user:user});
+        return u;
+    }
 
-    async getActiveUsers(): Promise<Array<iChatUser>> {
+    async getActiveUsers(): Promise<Array<Document & iChatUser>> {
        //query mongodb for users and return users
        const filter={lastSeenTimestamp: {$gt: new Date(Date.now()- this._activeUserMS)}};
        return await this._chatUser.find(filter);
        
        //return this._chatUser.find(`{lastSeenTimestamp: {$gt: new Date(Date.now()- ${this._activeUserMS}}`);
     }
-
+ 
     async activity(channel: string, user: string, message: string): Promise<void> {
      // insert user into DB if user doesn't exist
      // if it exists update the records 
@@ -83,12 +92,14 @@ export class ChatUserService implements iChatUserService, iChatUserObserver{
             streamer: false
             });
         }
-        const activeusers:Array<iChatUser>=await this.getActiveUsers();
-        let msg = `There are ${activeusers.length } active users: `;
-        for(let i of activeusers){
-            msg=msg + `${i.user}, `;
-        }
-        this._logger.debug(msg);
+        
+        // for debugging
+        // const activeusers:Array<iChatUser>=await this.getActiveUsers();
+        // let msg = `There are ${activeusers.length } active users: `;
+        // for(let i of activeusers){
+        //     msg=msg + `${i.user}, `;
+        // }
+        // this._logger.debug(msg);
     }
 
     
