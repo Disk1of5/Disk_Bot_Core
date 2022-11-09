@@ -16,6 +16,8 @@ export class ExpressJsService implements iExpressJsService {
     constructor(logger: Logger){
         this._logger=logger;
         this._app=express();
+        const cors = require('cors')
+        this._app.use(cors());
         this._app.listen(this._port,()=>{
             this._logger.debug(`Express JS Service Starting on Port ${this._port}`);
         });                

@@ -16,5 +16,5 @@ let diskServices=new DiskServices(logger,expressJsService,mongoDBService,chatUse
 let disk_bot= new Disk_Bot(diskServices);
 
 let chatMsgCommandConstructor=  new ChatMsgCommandConstructor(disk_bot.getChatClient(),diskServices);
-disk_bot.loadPlugins(new PluginChatMsgCommands(chatMsgCommandConstructor,logger));
+disk_bot.loadChatPlugins(new PluginChatMsgCommands(chatMsgCommandConstructor,logger));
 disk_bot.start();

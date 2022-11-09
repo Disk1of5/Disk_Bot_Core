@@ -1,5 +1,7 @@
+import { UserIdResolvable } from "@twurple/api/lib";
 import { AuthProvider } from "@twurple/auth/lib";
 import { ChatClient, PrivateMessage, toUserName } from "@twurple/chat";
+import { BasicPubSubClient, PubSubClient, PubSubRedemptionMessage } from "@twurple/pubsub";
 import { Logger } from "tslog";
 import { iPluginChatMsgCommands } from "../Interfaces/PluginChatMsgCommands";
 import { ChatUserService } from "./ChatUserService";
@@ -8,7 +10,7 @@ import { DiskServices } from "./DiskServices";
 
 export interface iDisk_Bot{
    start():void
-   loadPlugins(plugins: iPluginChatMsgCommands):void
+   loadChatPlugins(plugins: iPluginChatMsgCommands):void
    getChatClient(): ChatClient
 }
 export class Disk_Bot implements iDisk_Bot{
@@ -24,12 +26,14 @@ export class Disk_Bot implements iDisk_Bot{
         this._logger=diskServices.getLogger();
         this._authProvider = this._config.getAuthProvider();
         const authProvider = this._authProvider;
-        this._chatClient = new ChatClient({ authProvider, channels: this._config.twitchChannels });
+        this._chatClient = new ChatClient({ authProvider, channels: this._config.twitchChannels });        
+        
+
     }
     getChatClient(): ChatClient{
         return this._chatClient;
     }
-    loadPlugins(pluginChatMsgCommands: iPluginChatMsgCommands): void {
+    loadChatPlugins(pluginChatMsgCommands: iPluginChatMsgCommands): void {
         this._pluginChatMsgCommands=pluginChatMsgCommands;
         this._logger.info("Loading Plugins");
         for(let command of this._pluginChatMsgCommands.commands.getChatCommands){
@@ -46,6 +50,7 @@ export class Disk_Bot implements iDisk_Bot{
         } catch (error) {
             this._logger.error(`Unable to connect Error: ${error}`);
         }
+        
         this._logger.info(`Connected to Twich Chat`);
         this._chatClient.onJoin((channel)=>{
             this._logger.debug(`Joined ${channel}`);
@@ -56,12 +61,12 @@ export class Disk_Bot implements iDisk_Bot{
             this._chatClient.onMessage((channel: string, user: string, message: string, msg:  PrivateMessage)=>{
                 this._chatUserService.activity(channel,user, message);
                 this._pluginChatMsgCommands.commands.processChatMsgCommands(channel,user,message,msg, this._logger);
+                //if(msg.isRedemption==true)  // processChatMsgRedeems
+                //'custom-reward-id'
+                //console.log(msg.tags);
             });
         }catch(e){
             this._logger.error(`We encountered an error ${e}`);
         }
     }
-
-    
-
 }
