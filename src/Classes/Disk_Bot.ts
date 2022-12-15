@@ -27,7 +27,7 @@ export class Disk_Bot implements iDisk_Bot{
         this._authProvider = this._config.getAuthProvider();
         const authProvider = this._authProvider;
         this._chatClient = new ChatClient({ authProvider, channels: this._config.twitchChannels });        
-        
+        this._chatUserService.setChatBotName(this._chatClient.currentNick);
 
     }
     getChatClient(): ChatClient{

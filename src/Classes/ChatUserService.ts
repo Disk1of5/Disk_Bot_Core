@@ -11,12 +11,13 @@ export interface iChatUser{
     lastSeenTimestamp: Date,
     lastChatMessage: string;
     streamer: boolean;
+    diskbits: Number;
 }
 
 
 
 export interface iChatUserService{
-    getActiveUsers() : Promise<Array<Document & iChatUser>>;
+    getActiveUsers() : Promise<Array<Document & iChatUser | null>>;
     activity(channel: string, user: string, message: string): Promise<void>; 
     findUser(user: string): Promise<Document & iChatUser | null>;  
 }
@@ -34,6 +35,7 @@ export class ChatUserService implements iChatUserService, iChatUserObserver{
     private _logger: Logger;
     private _chatUser: Model<iChatUser>;
     private _chatUserSchema: Schema;
+    private _chatBotName: string="";
     constructor(logger: Logger, mongodbService: MongoDBService){
         this._logger= logger;
         this._mdb= mongodbService;
@@ -46,11 +48,11 @@ export class ChatUserService implements iChatUserService, iChatUserObserver{
         firstSeenTimestamp: { type: Date, required: true },
         lastSeenTimestamp: { type: Date, required: true },
         lastChatMessage: { type: String, required: false},
-        streamer:{type: Boolean, requierd: true}
+        streamer:{type: Boolean, requierd: true},
+        diskbits:{type: Number, required: false}
     })
     this._chatUserSchema = chatUserSchema;
     this._chatUser= m.model<iChatUser>('ChatUser', this._chatUserSchema);  
-
     }
     async findUser(user: string): Promise<Document & iChatUser | null> {
             
@@ -71,6 +73,8 @@ export class ChatUserService implements iChatUserService, iChatUserObserver{
      // if it exists update the records 
    //  const m: Mongoose = this._mdb.getMongoose();
         //find user
+
+        if(user==this.getChatBotName()) return  
         const userExists= await this._chatUser.exists({user: user});
         if(userExists){
             const tmpParams = {
@@ -89,7 +93,8 @@ export class ChatUserService implements iChatUserService, iChatUserObserver{
             lastSeenChannel: channel,
             lastSeenTimestamp: Date(),
             lastChatMessage: message,
-            streamer: false
+            streamer: false,
+            diskbits: 0
             });
         }
         
@@ -101,6 +106,11 @@ export class ChatUserService implements iChatUserService, iChatUserObserver{
         // }
         // this._logger.debug(msg);
     }
+    setChatBotName(botName: string){
+        this._chatBotName=botName;
+    }
 
-    
+    getChatBotName(): string{
+        return this._chatBotName;
+    }
 }
